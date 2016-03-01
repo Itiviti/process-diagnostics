@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>procdiag</id>
+        <version>1.0.0</version>
+        <title>Process Diagnostics</title>
+        <authors>arus ibirsan</authors>
+        <owners>arus ibirsan</owners>
+        <projectUrl>https://github.com/adrianrus/process-diagnostics</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Command line utility to create memory and call stack dumps based on CLRMD</description>
+    </metadata>
+    <files>
+        <file src="build\procdiag.exe" target="tools\procdiag.exe" />
+    </files>
+</package>
