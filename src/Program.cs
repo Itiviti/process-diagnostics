@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace ProcDiag
@@ -14,20 +16,19 @@ namespace ProcDiag
                 return;
 
             var process = Process.GetProcessById(options.ProcessId);
-            if (process == null)
-                throw new ArgumentException($"Process with pid: {options.ProcessId} not found.");
-
-            if (RedirectToX86(process, args))
+            if (RedirectToX86(process, args, Console.Out, Console.Error))
                 return;
 
             Dumper.Start(options, process, Console.Out);
         }
 
-        private static bool RedirectToX86(Process process, string[] args)
+        private static bool RedirectToX86(Process process, string[] args, TextWriter outWriter, TextWriter errorWriter)
         {
             if (IntPtr.Size == 8 && IsWin64Emulator(process))
             {
-                var processStartInfo = new ProcessStartInfo(@"procdiag.x86.exe", string.Join(" ", args))
+                var location = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "procdiag.x86.exe");
+
+                var processStartInfo = new ProcessStartInfo(location, string.Join(" ", args))
                 {
                     CreateNoWindow = true,
                     RedirectStandardError = true,
@@ -36,8 +37,8 @@ namespace ProcDiag
                 };
 
                 var wrapperProcess = Process.Start(processStartInfo);
-                Console.Out.Write(wrapperProcess.StandardOutput.ReadToEnd());
-                Console.Error.Write(wrapperProcess.StandardError.ReadToEnd());
+                outWriter.Write(wrapperProcess.StandardOutput.ReadToEnd());
+                errorWriter.Write(wrapperProcess.StandardError.ReadToEnd());
                 return true;
             }
 
