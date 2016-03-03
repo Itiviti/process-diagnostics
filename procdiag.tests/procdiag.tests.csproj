@@ -49,7 +49,7 @@
     <Compile Include="integration\MemoryDumpTests.cs" />
     <Compile Include="integration\ThreadDumpTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunUtility.cs" />
+    <Compile Include="integration\RunUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\procdiag.csproj">

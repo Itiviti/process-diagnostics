@@ -27,9 +27,9 @@ namespace ProcDiag
                 if (!options.ThreadsOnly)
                 {
                     IDebugClient client = dataTarget.DebuggerInterface;
-                    client.WriteDumpFile(
-                        Path.Combine(options.OutputFolder ?? Environment.CurrentDirectory, GetDumpFileName(process)),
-                        DEBUG_DUMP.DEFAULT);
+                    var fileName = Path.Combine(options.OutputFolder ?? Environment.CurrentDirectory, GetDumpFileName(process));
+                    outWriter.WriteLine($"Writing memory dump to: {fileName}");
+                    client.WriteDumpFile(fileName, DEBUG_DUMP.DEFAULT);
                 }
             }
 
