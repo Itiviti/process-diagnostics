@@ -5,7 +5,8 @@ mkdir build
 pushd .
 cd src\bin\Release
 ..\..\..\packages\ILRepack.2.0.10\tools\ILRepack.exe procdiag.exe CommandLine.dll Microsoft.Diagnostics.Runtime.dll /out=..\..\..\build\procdiag.exe
-popd
+copy procdiag.x86.exe ..\..\..\build\
+popd 
 nuget pack procdiag.1.0.0.nuspec -o build
 pause
 

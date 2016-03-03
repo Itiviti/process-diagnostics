@@ -1,105 +1,67 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.Diagnostics.Runtime;
-using Microsoft.Diagnostics.Runtime.Interop;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace ProcDiag
 {
-    internal class Program
+    public class Program
     {
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Options options = new Options();
 
             if (!CommandLine.Parser.Default.ParseArguments(args, options))
                 return;
 
-            Dictionary<ClrType, HeapStatsEntry> stats = null;
-            IEnumerable<string> threads = null;
-            using (var dataTarget = DataTarget.AttachToProcess(options.ProcessId, 5000, AttachFlag.Invasive))
-            {
-                ClrInfo version = dataTarget.ClrVersions.FirstOrDefault();
-                if (version != null)
-                {
-                    var runtime = version.CreateRuntime();
-                    threads = ThreadsDump(runtime);
-                    if (!options.ThreadsOnly) stats = HeapDump(runtime);
-                }
+            var process = Process.GetProcessById(options.ProcessId);
+            if (process == null)
+                throw new ArgumentException($"Process with pid: {options.ProcessId} not found.");
 
-                if (!options.ThreadsOnly)
-                {
-                    IDebugClient client = dataTarget.DebuggerInterface;
-                    client.WriteDumpFile(Path.Combine(options.OutputFolder?? Environment.CurrentDirectory, GetDumpFileName(options.ProcessId)), DEBUG_DUMP.DEFAULT);
-                }
-            }
+            if (RedirectToX86(process, args))
+                return;
 
-            if (threads != null)
-            {
-                Console.WriteLine("Thread dump:");
-                foreach (var thread in threads)
-                {
-                    Console.WriteLine(thread);
-                }
-                Console.WriteLine("Thread dump finished");
-            }
-
-            if (stats != null)
-            {
-                Console.WriteLine("Heap stats:");
-                Console.WriteLine("{0,12} {1,12} {2}", "Size", "Count", "Type");
-                foreach (var entry in from entry in stats.Values orderby entry.Size select entry)
-                    Console.WriteLine("{0,12:n0} {1,12:n0} {2}", entry.Size, entry.Count, entry.Name);
-                Console.WriteLine("Heap stats finished");
-            }
+            Dumper.Start(options, process, Console.Out);
         }
 
-        private static IEnumerable<string> ThreadsDump(ClrRuntime runtime)
+        private static bool RedirectToX86(Process process, string[] args)
         {
-            List<string> threads = new List<string>();
-            foreach (ClrThread thread in runtime.Threads.Where(thread => thread.IsAlive))
+            if (IntPtr.Size == 8 && IsWin64Emulator(process))
             {
-                ThreadStackParser parser = new ThreadStackParser(thread);
-                foreach (ClrStackFrame frame in thread.StackTrace)
-                    parser.ParseLine(
-                        String.Format("{0,12:X} {1,12:X} {2} ", frame.StackPointer, frame.InstructionPointer, frame)
-                            .Trim());
-                threads.AddRange(parser.GetOutput());
-            }
-            return threads;
-        }
-
-        private static Dictionary<ClrType, HeapStatsEntry> HeapDump(ClrRuntime runtime)
-        {
-            Dictionary<ClrType, HeapStatsEntry> stats = new Dictionary<ClrType, HeapStatsEntry>();
-            ClrHeap heap = runtime.GetHeap();
-            foreach (ClrSegment seg in heap.Segments)
-            {
-                for (ulong obj = seg.FirstObject; obj != 0; obj = seg.NextObject(obj))
+                var processStartInfo = new ProcessStartInfo(@"procdiag.x86.exe", string.Join(" ", args))
                 {
-                    ClrType type = heap.GetObjectType(obj);
-                    if (type == null) continue;
+                    CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                };
 
-                    HeapStatsEntry entry;
-                    if (!stats.TryGetValue(type, out entry))
-                    {
-                        entry = new HeapStatsEntry {Name = type.Name};
-                        stats[type] = entry;
-                    }
-                    entry.Count++;
-                    entry.Size += type.GetSize(obj);
-                }
+                var wrapperProcess = Process.Start(processStartInfo);
+                Console.Out.Write(wrapperProcess.StandardOutput.ReadToEnd());
+                Console.Error.Write(wrapperProcess.StandardError.ReadToEnd());
+                return true;
             }
 
-            return stats;
+            return false;
         }
 
-        private static string GetDumpFileName(int pid)
+        private static bool IsWin64Emulator(Process process)
         {
-            var process = System.Diagnostics.Process.GetProcessById(pid);
-            var time = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-            return String.Format("{0}-dump-{1}.dmp", process.ProcessName, time);
+            if ((Environment.OSVersion.Version.Major > 5)
+                || ((Environment.OSVersion.Version.Major == 5) && (Environment.OSVersion.Version.Minor >= 1)))
+            {
+                bool retVal;
+
+                return NativeMethods.IsWow64Process(process.Handle, out retVal) && retVal;
+            }
+
+            return false; // not on 64-bit Windows Emulator
+        }
+
+        internal static class NativeMethods
+        {
+            [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
         }
     }
 }
