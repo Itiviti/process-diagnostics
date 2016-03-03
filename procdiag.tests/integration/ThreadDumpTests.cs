@@ -12,26 +12,28 @@ namespace procdiag.tests.integration
         public void X64_Process_ThreadDump()
         {
             // arrange
-            var process = StartProcess("TestProcessX64.exe");
+            using (var process = StartProcess("TestProcessX64.exe"))
+            {
+                //act
+                var result = Execute(new[] { $"-p {process.Id}", "--threadsonly" });
 
-            //act
-            var result = Execute(process, new[] { $"-p {process.Id}", "--threadsonly" });
-
-            //assert
-            AssertThreadDump(result, "TestProcessX64");
+                //assert
+                AssertThreadDump(result, "TestProcessX64");
+            }
         }
 
         [Test]
         public void X86_Process_ThreadDump()
         {
             // arrange
-            var process = StartProcess("TestProcessX86.exe");
+            using (var process = StartProcess("TestProcessX86.exe"))
+            {
+                //act
+                var result = Execute(new[] { $"-p {process.Id}", "--threadsonly" });
 
-            //act
-            var result = Execute(process, new []{ $"-p {process.Id}", "--threadsonly"});
-
-            //assert
-            AssertThreadDump(result, "TestProcessX86");
+                //assert
+                AssertThreadDump(result, "TestProcessX86");
+            }
         }
 
         private static void AssertThreadDump(string result, string processName)

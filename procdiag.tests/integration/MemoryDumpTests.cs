@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,29 +15,33 @@ namespace procdiag.tests.integration
         public void X64_Process_MemoryDump()
         {
             // arrange
-            var process = StartProcess("TestProcessX64.exe");
-            EnsureNoDumpFilesArePresent(process);
+            using (var process = StartProcess("TestProcessX64.exe"))
+            {
+                EnsureNoDumpFilesArePresent(process.Name);
 
-            //act
-            var result = Execute(process, new[] { $"-p {process.Id}" });
+                //act
+                var result = Execute(new[] { $"-p {process.Id}" });
 
-            AssertOutput(process, result, "USERDU64");
+                AssertOutput(process.Name, result, "USERDU64");
+            }
         }
 
         [Test]
         public void X86_Process_MemoryDump()
         {
             // arrange
-            var process = StartProcess("TestProcessX86.exe");
-            EnsureNoDumpFilesArePresent(process);
+            using (var process = StartProcess("TestProcessX86.exe"))
+            {
+                EnsureNoDumpFilesArePresent(process.Name);
 
-            //act
-            var result = Execute(process, new[] { $"-p {process.Id}" });
+                //act
+                var result = Execute(new[] { $"-p {process.Id}" });
 
-            AssertOutput(process, result, "USERDUMP");
+                AssertOutput(process.Name, result, "USERDUMP");
+            }
         }
 
-        private void EnsureNoDumpFilesArePresent(Process process)
+        private void EnsureNoDumpFilesArePresent(string process)
         {
             foreach (var dumpFile in GetDumpFiles(process))
             {
@@ -46,7 +49,7 @@ namespace procdiag.tests.integration
             }
         }
 
-        private static void AssertOutput(Process process, string result, string dumpPrefix)
+        private static void AssertOutput(string process, string result, string dumpPrefix)
         {
             FileInfo fi = new FileInfo(GetDumpFiles(process).Single());
 
@@ -67,9 +70,9 @@ namespace procdiag.tests.integration
             }
         }
 
-        private static string[] GetDumpFiles(Process process)
+        private static string[] GetDumpFiles(string process)
         {
-            return Directory.GetFiles(Environment.CurrentDirectory, $"{process.ProcessName}-dump-*.dmp");
+            return Directory.GetFiles(Environment.CurrentDirectory, $"{process}-dump-*.dmp");
         }
 
         private static void AssertOutput(string result)

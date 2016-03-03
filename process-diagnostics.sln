@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "procdiag", "src\procdiag.csproj", "{CE99C44A-2502-4195-8DCC-45A1F88EFC88}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test-data", "test-data", "{8615AE8C-815D-45B2-A241-5557EBA0C058}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "procdiag.tests", "procdiag.tests\procdiag.tests.csproj", "{E3C7CEDA-ED5F-4693-B344-68902336EB66}"
+	ProjectSection(ProjectDependencies) = postProject
+		{69B4234C-935A-4767-873E-FE1EAA345036} = {69B4234C-935A-4767-873E-FE1EAA345036}
+		{C84727B0-F427-45B0-9D3F-6221D111D996} = {C84727B0-F427-45B0-9D3F-6221D111D996}
+		{142CA8DD-9FDC-4C19-8D1C-DF335F214716} = {142CA8DD-9FDC-4C19-8D1C-DF335F214716}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProcessX86", "test-data\TestProcessX86\TestProcessX86.csproj", "{142CA8DD-9FDC-4C19-8D1C-DF335F214716}"
 EndProject
