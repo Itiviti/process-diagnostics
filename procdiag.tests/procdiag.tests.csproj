@@ -62,10 +62,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="..\src\bin\Debug\procdiag.x86.exe">
-      <Link>procdiag.x86.exe</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\test-data\TestProcessX64\bin\Debug\TestProcessX64.exe">
       <Link>TestProcessX64.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

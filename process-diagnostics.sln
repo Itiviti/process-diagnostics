@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "procdiag", "src\procdiag.csproj", "{CE99C44A-2502-4195-8DCC-45A1F88EFC88}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C84727B0-F427-45B0-9D3F-6221D111D996} = {C84727B0-F427-45B0-9D3F-6221D111D996}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "procdiag.x86", "procdiag.x86.wrapper\procdiag.x86.csproj", "{C84727B0-F427-45B0-9D3F-6221D111D996}"
 EndProject

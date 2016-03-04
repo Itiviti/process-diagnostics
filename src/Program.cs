@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace ProcDiag
@@ -24,11 +23,12 @@ namespace ProcDiag
 
         private static bool RedirectToX86(Process process, string[] args, TextWriter outWriter, TextWriter errorWriter)
         {
-            if (IntPtr.Size == 8 && IsWin64Emulator(process))
-            {
-                var location = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "procdiag.x86.exe");
+            if (IntPtr.Size != 8 || !IsWin64Emulator(process)) return false;
 
-                var processStartInfo = new ProcessStartInfo(location, string.Join(" ", args))
+            const string x86Wrapper = "procdiag.x86.exe";
+            using (new TemporaryFile(x86Wrapper, Resources.procdiag_x86))
+            {
+                var processStartInfo = new ProcessStartInfo(x86Wrapper, string.Join(" ", args))
                 {
                     CreateNoWindow = true,
                     RedirectStandardError = true,
@@ -39,10 +39,9 @@ namespace ProcDiag
                 var wrapperProcess = Process.Start(processStartInfo);
                 outWriter.Write(wrapperProcess.StandardOutput.ReadToEnd());
                 errorWriter.Write(wrapperProcess.StandardError.ReadToEnd());
-                return true;
             }
 
-            return false;
+            return true;
         }
 
         private static bool IsWin64Emulator(Process process)
