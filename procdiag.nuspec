@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>procdiag</id>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <title>Process Diagnostics</title>
         <authors>arus ibirsan</authors>
         <owners>arus ibirsan</owners>
@@ -12,6 +12,5 @@
     </metadata>
     <files>
         <file src="build\procdiag.exe" target="tools\procdiag.exe" />
-        <file src="build\procdiag.x86.exe" target="tools\procdiag.x86.exe" />
     </files>
 </package>

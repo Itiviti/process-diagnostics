@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace ProcDiag
@@ -25,7 +26,7 @@ namespace ProcDiag
         {
             if (IntPtr.Size != 8 || !IsWin64Emulator(process)) return false;
 
-            const string x86Wrapper = "procdiag.x86.exe";
+            string x86Wrapper = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "procdiag.x86.exe");
             using (new TemporaryFile(x86Wrapper, Resources.procdiag_x86))
             {
                 var processStartInfo = new ProcessStartInfo(x86Wrapper, string.Join(" ", args))
