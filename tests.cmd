@@ -1,7 +1,7 @@
-msbuild /t:Build /p:Configuration=Release
+msbuild /t:Build /p:Configuration=Debug
 
 cd procdiag.tests\bin\Debug
-nunit3-console.exe procdiag.tests.dll
+"%NUNIT_HOME%\nunit3-console.exe" procdiag.tests.dll
 
 pause
 
