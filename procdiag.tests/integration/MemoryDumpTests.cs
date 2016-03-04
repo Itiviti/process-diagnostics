@@ -17,7 +17,7 @@ namespace procdiag.tests.integration
             // arrange
             using (var process = StartProcess("TestProcessX64.exe"))
             {
-                EnsureNoDumpFilesArePresent(process.Name);
+                EnsureNoDumpFilesArePresent(Environment.CurrentDirectory, process.Name);
 
                 //act
                 var result = Execute(new[] { $"-p {process.Id}" });
@@ -27,12 +27,28 @@ namespace procdiag.tests.integration
         }
 
         [Test]
+        public void ShouldWrite_DumpFile_AtSpecifiedLocation()
+        {
+            // arrange
+            using (var outFolder = new TemporaryFolder("New Folder"))
+            using (var process = StartProcess("TestProcessX86.exe"))
+            {
+                EnsureNoDumpFilesArePresent(outFolder.FullName, process.Name);
+
+                //act
+                var result = Execute(new[] { $"-p {process.Id} --out=\"{outFolder.FullName}\" " });
+
+                AssertOutput(process.Name, outFolder.FullName, result, "USERDUMP");
+            }
+        }
+
+        [Test]
         public void X86_Process_MemoryDump()
         {
             // arrange
             using (var process = StartProcess("TestProcessX86.exe"))
             {
-                EnsureNoDumpFilesArePresent(process.Name);
+                EnsureNoDumpFilesArePresent(Environment.CurrentDirectory, process.Name);
 
                 //act
                 var result = Execute(new[] { $"-p {process.Id}" });
@@ -41,9 +57,9 @@ namespace procdiag.tests.integration
             }
         }
 
-        private void EnsureNoDumpFilesArePresent(string process)
+        private void EnsureNoDumpFilesArePresent(string outFolder, string process)
         {
-            foreach (var dumpFile in GetDumpFiles(process))
+            foreach (var dumpFile in GetDumpFiles(outFolder, process))
             {
                 File.Delete(dumpFile);
             }
@@ -51,7 +67,12 @@ namespace procdiag.tests.integration
 
         private static void AssertOutput(string process, string result, string dumpPrefix)
         {
-            FileInfo fi = new FileInfo(GetDumpFiles(process).Single());
+            AssertOutput(process, Environment.CurrentDirectory, result, dumpPrefix);
+        }
+
+        private static void AssertOutput(string process, string outputFoler, string result, string dumpPrefix)
+        {
+            FileInfo fi = new FileInfo(GetDumpFiles(outputFoler, process).Single());
 
             try
             {
@@ -70,9 +91,9 @@ namespace procdiag.tests.integration
             }
         }
 
-        private static string[] GetDumpFiles(string process)
+        private static string[] GetDumpFiles(string folder, string process)
         {
-            return Directory.GetFiles(Environment.CurrentDirectory, $"{process}-dump-*.dmp");
+            return Directory.GetFiles(folder, $"{process}-dump-*.dmp");
         }
 
         private static void AssertOutput(string result)
@@ -80,6 +101,23 @@ namespace procdiag.tests.integration
             StringAssert.Contains("Heap stats:", result);
             StringAssert.Contains("Size        Count Type", result);
             StringAssert.EndsWith("Heap stats finished." + Environment.NewLine, result);
+        }
+
+        private class TemporaryFolder : IDisposable
+        {
+            private readonly string _location;
+
+            public TemporaryFolder(string location)
+            {
+                _location = Directory.CreateDirectory(location).FullName;
+            }
+
+            public string FullName => _location;
+
+            public void Dispose()
+            {
+                Directory.Delete(_location);
+            }
         }
     }
 }

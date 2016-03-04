@@ -29,7 +29,7 @@ namespace ProcDiag
             string x86Wrapper = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "procdiag.x86.exe");
             using (new TemporaryFile(x86Wrapper, Resources.procdiag_x86))
             {
-                var processStartInfo = new ProcessStartInfo(x86Wrapper, string.Join(" ", args))
+                var processStartInfo = new ProcessStartInfo(x86Wrapper, Environment.CommandLine)
                 {
                     CreateNoWindow = true,
                     RedirectStandardError = true,
@@ -40,6 +40,7 @@ namespace ProcDiag
                 var wrapperProcess = Process.Start(processStartInfo);
                 outWriter.Write(wrapperProcess.StandardOutput.ReadToEnd());
                 errorWriter.Write(wrapperProcess.StandardError.ReadToEnd());
+                wrapperProcess.WaitForExit();
             }
 
             return true;
