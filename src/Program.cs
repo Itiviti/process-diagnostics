@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -15,14 +16,21 @@ namespace ProcDiag
             if (!CommandLine.Parser.Default.ParseArguments(args, options))
                 return;
 
-            var process = Process.GetProcessById(options.ProcessId);
+            var process = GetProcess(options.Process);
+
             if (RedirectToX86(process, Console.Out, Console.Error))
                 return;
 
-            if (!string.IsNullOrEmpty(options.OutputFolder))
+            if (!string.IsNullOrEmpty(options.OutputFolder) || (!options.DumpStats && !options.DumpThreads))
                 options.FullDump = true;
 
             Dumper.Start(options, process, Console.Out);
+        }
+
+        private static Process GetProcess(string process)
+        {
+            int pid;
+            return int.TryParse(process, out pid) ? Process.GetProcessById(pid) : Process.GetProcessesByName(process).First();
         }
 
         private static bool RedirectToX86(Process process, TextWriter outWriter, TextWriter errorWriter)

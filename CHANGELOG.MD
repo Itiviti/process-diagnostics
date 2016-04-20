@@ -3,10 +3,11 @@
 ## 1.3.0
 
 * Arguments overhaul (BREAKING CHANGES)
-    --threadsonly: dropped in favor of --threads, can be combined with other arguments
-    --stats: added for heap statistics, can be combined with other arguments
-    --full: added for a full memory dump, can be combined with other argument
-        Specifying a dump location with -o or --out will imply --full argument
+    * -p/--pid: now also suports process name not only process pid
+    * --threadsonly: dropped in favor of --threads, can be combined with other arguments
+    * --stats: added for heap statistics, can be combined with other arguments
+    * --full: added for a full memory dump, can be combined with other argument
+    * Specifying a dump location with -o or --out will imply --full option, also specifing only -p/--pid argument implies --full option
 
 ## 1.2.1
 

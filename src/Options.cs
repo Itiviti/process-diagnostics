@@ -5,8 +5,8 @@ namespace ProcDiag
 {
     internal class Options
     {
-        [Option('p', "pid", Required = true, HelpText = "Process id.")]
-        public int ProcessId { get; set; }
+        [Option('p', "pid", Required = true, HelpText = "Process id/name.")]
+        public string Process { get; set; }
 
         [Option('o', "out", HelpText = "The folder where minidump will be created. Setting it implies --full option")]
         public string OutputFolder { get; set; }
