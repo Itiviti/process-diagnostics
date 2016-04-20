@@ -8,11 +8,17 @@ namespace ProcDiag
         [Option('p', "pid", Required = true, HelpText = "Process id.")]
         public int ProcessId { get; set; }
 
-        [Option('o', "out", HelpText = "The folder where minidump will be created.")]
+        [Option('o', "out", HelpText = "The folder where minidump will be created. Setting it implies --full option")]
         public string OutputFolder { get; set; }
 
-        [VerbOption("threadsonly", HelpText = "Only dump threads.")]
-        public bool ThreadsOnly { get; set; }
+        [VerbOption("threads", HelpText = "Dump thread callstacks.")]
+        public bool DumpThreads { get; set; }
+
+        [VerbOption("stats", HelpText = "Dump heap stats.")]
+        public bool DumpStats { get; set; }
+
+        [VerbOption("full", HelpText = "Create memory dump.")]
+        public bool FullDump { get; set; }
 
         [ParserState]
         public IParserState LastParserState { get; set; }

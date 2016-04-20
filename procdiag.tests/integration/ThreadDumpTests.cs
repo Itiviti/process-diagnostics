@@ -15,7 +15,7 @@ namespace procdiag.tests.integration
             using (var process = StartProcess("TestProcessX64.exe"))
             {
                 //act
-                var result = Execute(new[] { $"-p {process.Id}", "--threadsonly" });
+                var result = Execute(new[] { $"-p {process.Id}", "--threads" });
 
                 //assert
                 AssertThreadDump(result, "TestProcessX64");
@@ -29,7 +29,7 @@ namespace procdiag.tests.integration
             using (var process = StartProcess("TestProcessX86.exe"))
             {
                 //act
-                var result = Execute(new[] { $"-p {process.Id}", "--threadsonly" });
+                var result = Execute(new[] { $"-p {process.Id}", "--threads" });
 
                 //assert
                 AssertThreadDump(result, "TestProcessX86");

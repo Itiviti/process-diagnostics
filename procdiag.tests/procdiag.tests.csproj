@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="integration\MemoryDumpTests.cs" />
+    <Compile Include="integration\MemoryStatsTests.cs" />
     <Compile Include="integration\ThreadDumpTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="integration\RunUtility.cs" />

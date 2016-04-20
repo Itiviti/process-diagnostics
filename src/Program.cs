@@ -16,13 +16,16 @@ namespace ProcDiag
                 return;
 
             var process = Process.GetProcessById(options.ProcessId);
-            if (RedirectToX86(process, args, Console.Out, Console.Error))
+            if (RedirectToX86(process, Console.Out, Console.Error))
                 return;
+
+            if (!string.IsNullOrEmpty(options.OutputFolder))
+                options.FullDump = true;
 
             Dumper.Start(options, process, Console.Out);
         }
 
-        private static bool RedirectToX86(Process process, string[] args, TextWriter outWriter, TextWriter errorWriter)
+        private static bool RedirectToX86(Process process, TextWriter outWriter, TextWriter errorWriter)
         {
             if (IntPtr.Size != 8 || !IsWin64Emulator(process)) return false;
 

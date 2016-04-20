@@ -20,7 +20,7 @@ namespace procdiag.tests.integration
                 EnsureNoDumpFilesArePresent(Environment.CurrentDirectory, process.Name);
 
                 //act
-                var result = Execute(new[] { $"-p {process.Id}" });
+                var result = Execute(new[] { $"-p {process.Id} --full" });
 
                 AssertOutput(process.Name, result, "USERDU64");
             }
@@ -51,7 +51,7 @@ namespace procdiag.tests.integration
                 EnsureNoDumpFilesArePresent(Environment.CurrentDirectory, process.Name);
 
                 //act
-                var result = Execute(new[] { $"-p {process.Id}" });
+                var result = Execute(new[] { $"-p {process.Id} --full" });
 
                 AssertOutput(process.Name, result, "USERDUMP");
             }
@@ -91,16 +91,14 @@ namespace procdiag.tests.integration
             }
         }
 
+        private static void AssertOutput(string result)
+        {
+            StringAssert.Contains("Writing memory dump to", result);
+        }
+
         private static string[] GetDumpFiles(string folder, string process)
         {
             return Directory.GetFiles(folder, $"{process}-dump-*.dmp");
-        }
-
-        private static void AssertOutput(string result)
-        {
-            StringAssert.Contains("Heap stats:", result);
-            StringAssert.Contains("Size        Count Type", result);
-            StringAssert.EndsWith("Heap stats finished." + Environment.NewLine, result);
         }
 
         private class TemporaryFolder : IDisposable

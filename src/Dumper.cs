@@ -20,11 +20,14 @@ namespace ProcDiag
                 if (version != null)
                 {
                     var runtime = version.CreateRuntime();
-                    threads = ThreadsDump(runtime);
-                    if (!options.ThreadsOnly) stats = HeapDump(runtime);
+                    if (options.DumpThreads)
+                        threads = ThreadsDump(runtime);
+
+                    if (options.DumpStats)
+                        stats = HeapDump(runtime);
                 }
 
-                if (!options.ThreadsOnly)
+                if (options.FullDump)
                 {
                     IDebugClient client = dataTarget.DebuggerInterface;
                     var fileName = Path.Combine(options.OutputFolder ?? Environment.CurrentDirectory, GetDumpFileName(process));
