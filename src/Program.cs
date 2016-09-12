@@ -16,7 +16,16 @@ namespace ProcDiag
             if (!CommandLine.Parser.Default.ParseArguments(args, options))
                 return;
 
-            var process = GetProcess(options.Process);
+            Process process = null;
+            try
+            {
+                process = GetProcess(options.Process);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Environment.Exit(-1);
+            }
 
             if (RedirectToX86(process, Console.Out, Console.Error))
                 return;
@@ -30,7 +39,14 @@ namespace ProcDiag
         private static Process GetProcess(string process)
         {
             int pid;
-            return int.TryParse(process, out pid) ? Process.GetProcessById(pid) : Process.GetProcessesByName(process).First();
+            if (int.TryParse(process, out pid))
+                return Process.GetProcessById(pid);
+
+            var result = Process.GetProcessesByName(process).FirstOrDefault();
+            if (result == null)
+                throw new ArgumentException($"Process '{process}' not found!");
+
+            return result;
         }
 
         private static bool RedirectToX86(Process process, TextWriter outWriter, TextWriter errorWriter)
