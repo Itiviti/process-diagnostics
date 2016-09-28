@@ -13,7 +13,7 @@ namespace ProcDiag
         public static void Start(Options options, Process process, TextWriter outWriter)
         {
             Dictionary<ClrType, HeapStatsEntry> stats = null;
-            IEnumerable<string> threads = null;
+            IEnumerable<ThreadData> threads = null;
             using (var dataTarget = DataTarget.AttachToProcess(process.Id, 5000, AttachFlag.Invasive))
             {
                 ClrInfo version = dataTarget.ClrVersions.FirstOrDefault();
@@ -41,7 +41,7 @@ namespace ProcDiag
                 outWriter.WriteLine("Thread dump:");
                 foreach (var thread in threads)
                 {
-                    outWriter.WriteLine(thread);
+                    outWriter.Write(thread);
                 }
                 outWriter.WriteLine("Thread dump finished.");
             }
@@ -56,17 +56,15 @@ namespace ProcDiag
             }
         }
 
-        private static IEnumerable<string> ThreadsDump(ClrRuntime runtime)
+        private static IEnumerable<ThreadData> ThreadsDump(ClrRuntime runtime)
         {
-            List<string> threads = new List<string>();
+            var threads = new List<ThreadData>();
             foreach (ClrThread thread in runtime.Threads.Where(thread => thread.IsAlive))
             {
                 ThreadStackParser parser = new ThreadStackParser(thread);
                 foreach (ClrStackFrame frame in thread.StackTrace)
-                    parser.ParseLine(
-                        String.Format("{0,12:X} {1,12:X} {2} ", frame.StackPointer, frame.InstructionPointer, frame)
-                            .Trim());
-                threads.AddRange(parser.GetOutput());
+                    parser.ParseLine(frame.ToString());
+                threads.Add(parser.GetOutput());
             }
             return threads;
         }
