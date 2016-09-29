@@ -27,13 +27,15 @@ namespace ProcDiag
                 Environment.Exit(-1);
             }
 
-            if (RedirectToX86(process, Console.Out, Console.Error))
+            var outWriter = new Writer(Console.Out);
+
+            if (RedirectToX86(process, outWriter, new Writer(Console.Error)))
                 return;
 
             if (!string.IsNullOrEmpty(options.OutputFolder) || (!options.DumpStats && !options.DumpThreads))
                 options.FullDump = true;
 
-            Dumper.Start(options, process, Console.Out);
+            Dumper.Start(options, process, outWriter);
         }
 
         private static Process GetProcess(string process)
@@ -49,7 +51,7 @@ namespace ProcDiag
             return result;
         }
 
-        private static bool RedirectToX86(Process process, TextWriter outWriter, TextWriter errorWriter)
+        private static bool RedirectToX86(Process process, Writer outWriter, Writer errorWriter)
         {
             if (IntPtr.Size != 8 || !IsWin64Emulator(process)) return false;
 

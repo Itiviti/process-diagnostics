@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Dumper.cs" />
     <Compile Include="HeapStatsEntry.cs" />
+    <Compile Include="IWriter.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,6 +85,7 @@
     </Compile>
     <Compile Include="TemporaryFile.cs" />
     <Compile Include="ThreadStackParser.cs" />
+    <Compile Include="Writer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

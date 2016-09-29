@@ -10,7 +10,7 @@ namespace ProcDiag
 {
     internal class Dumper
     {
-        public static void Start(Options options, Process process, TextWriter outWriter)
+        public static void Start(Options options, Process process, IWriter outWriter)
         {
             Dictionary<ClrType, HeapStatsEntry> stats = null;
             IEnumerable<ThreadData> threads = null;
@@ -41,7 +41,7 @@ namespace ProcDiag
                 outWriter.WriteLine("Thread dump:");
                 foreach (var thread in threads)
                 {
-                    outWriter.Write(thread);
+                    outWriter.Write(thread.ToString());
                 }
                 outWriter.WriteLine("Thread dump finished.");
             }
@@ -49,9 +49,9 @@ namespace ProcDiag
             if (stats != null)
             {
                 outWriter.WriteLine("Heap stats:");
-                outWriter.WriteLine("{0,12} {1,12} {2}", "Size", "Count", "Type");
+                outWriter.WriteLine($"{"Size",12} {"Count",12} {"Type"}");
                 foreach (var entry in from entry in stats.Values orderby entry.Size select entry)
-                    outWriter.WriteLine("{0,12:n0} {1,12:n0} {2}", entry.Size, entry.Count, entry.Name);
+                    outWriter.WriteLine($"{entry.Size,12:n0} {entry.Count,12:n0} {entry.Name}");
                 outWriter.WriteLine("Heap stats finished.");
             }
         }
