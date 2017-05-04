@@ -44,11 +44,18 @@ namespace ProcDiag
             if (int.TryParse(process, out pid))
                 return Process.GetProcessById(pid);
 
-            var result = Process.GetProcessesByName(process).FirstOrDefault();
+            var result = GetProcessByName(process).FirstOrDefault();
             if (result == null)
                 throw new ArgumentException($"Process '{process}' not found!");
 
             return result;
+        }
+
+        private static Process[] GetProcessByName(string process)
+        {
+            if (process.ToLower().EndsWith(".exe"))
+                process = process.Remove(process.Length - 4);
+            return Process.GetProcessesByName(process);
         }
 
         private static bool RedirectToX86(Process process, Writer outWriter, Writer errorWriter)
