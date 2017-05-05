@@ -1,9 +1,11 @@
-﻿namespace ProcDiag
+﻿using System;
+
+namespace ProcDiag
 {
-    public interface IWriter
+    public interface IWriter : IDisposable
     {
         void WriteLine(string line);
-
-        void Write(string line);
+        void WriteLine(string line, string label);
+        void WriteHint(string line);
     }
 }

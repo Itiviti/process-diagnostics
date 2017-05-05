@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System.IO;
 
 namespace ProcDiag
@@ -20,5 +21,18 @@ namespace ProcDiag
         {
             _writer.Write(line);
         }
+=======
+﻿using System;
+
+namespace ProcDiag
+{
+    
+    public interface Writer : IDisposable
+    {
+        void WriteLine(string line);
+        void WriteLine(string line, string label);
+        void WriteHint(string line);
+        // void WriteLine(string line);
+>>>>>>> xml
     }
 }

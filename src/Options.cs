@@ -14,6 +14,9 @@ namespace ProcDiag
         [VerbOption("threads", HelpText = "Dump thread callstacks.")]
         public bool DumpThreads { get; set; }
 
+        [VerbOption("xml", HelpText = "XML output.")]
+        public bool Xml { get; set; }
+
         [VerbOption("stats", HelpText = "Dump heap stats.")]
         public bool DumpStats { get; set; }
 

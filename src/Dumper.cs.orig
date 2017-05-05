@@ -12,7 +12,11 @@ namespace ProcDiag
 
     internal class Dumper
     {
+<<<<<<< HEAD
         public static void Start(Options options, Process process, IWriter outWriter)
+=======
+        public static void Start(Options options, Process process, Writer outWriter)
+>>>>>>> xml
         {
             Dictionary<ClrType, HeapStatsEntry> stats = null;
             IEnumerable<ThreadData> threads = null;
@@ -43,36 +47,61 @@ namespace ProcDiag
                 outWriter.WriteHint("Thread dump:");
                 foreach (var thread in threads)
                 {
-                    outWriter.WriteLine(thread.ToString(), "thread");
+<<<<<<< HEAD
+                    outWriter.Write(thread.ToString());
+=======
+                    outWriter.WriteLine(thread.StackTrace, "thread");
+>>>>>>> xml
                 }
                 outWriter.WriteHint("Thread dump finished.");
             }
 
             if (stats != null)
             {
+<<<<<<< HEAD
+                outWriter.WriteLine("Heap stats:");
+                outWriter.WriteLine($"{"Size",12} {"Count",12} {"Type"}");
+                foreach (var entry in from entry in stats.Values orderby entry.Size select entry)
+                    outWriter.WriteLine($"{entry.Size,12:n0} {entry.Count,12:n0} {entry.Name}");
+                outWriter.WriteLine("Heap stats finished.");
+=======
                 outWriter.WriteHint("Heap stats:");
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(string.Format("{0,12} {1,12} {2}", "Size", "Count", "Type"));
                 foreach (var entry in from entry in stats.Values orderby entry.Size select entry)
                     sb.AppendLine(string.Format("{0,12:n0} {1,12:n0} {2}", entry.Size, entry.Count, entry.Name));
-                outWriter.WriteLine(sb.ToString(), "Heap");
+                outWriter.WriteLine(sb.ToString());
                 outWriter.WriteHint("Heap stats finished.");
+>>>>>>> xml
             }
         }
 
         private static IEnumerable<ThreadData> ThreadsDump(ClrRuntime runtime)
         {
+<<<<<<< HEAD
+            var threads = new List<ThreadData>();
+=======
             List<ThreadData> threads = new List<ThreadData>();
+>>>>>>> xml
             foreach (ClrThread thread in runtime.Threads.Where(thread => thread.IsAlive))
             {
-                var parser = new ThreadStackParser(thread);
-
+                ThreadData data = new ThreadData();
+              
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(string.Format("Thread Id: {0:X} ({1}) ", thread.OSThreadId, thread.ManagedThreadId));
                 foreach (ClrStackFrame frame in thread.StackTrace)
+<<<<<<< HEAD
                     parser.ParseLine(frame.ToString());
-
                 threads.Add(parser.GetOutput());
+=======
+                    sb.AppendLine(frame.ToString());
+
+                data.StackTrace = sb.ToString();
+
+                threads.Add(data);
 
 
+>>>>>>> xml
             }
             return threads;
         }

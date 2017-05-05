@@ -27,9 +27,9 @@ namespace ProcDiag
                 Environment.Exit(-1);
             }
 
-            
+            var outWriter = new Writer(Console.Out);
 
-            if (RedirectToX86(process, Console.Out, Console.Error))
+            if (RedirectToX86(process, outWriter, new Writer(Console.Error)))
                 return;
 
             if (!string.IsNullOrEmpty(options.OutputFolder) || (!options.DumpStats && !options.DumpThreads))
@@ -39,14 +39,18 @@ namespace ProcDiag
                 Dumper.Start(options, process, output);
             }
 
+<<<<<<< HEAD
+            Dumper.Start(options, process, outWriter);
+=======
         }
 
-        private static IWriter GetOutput(Options options)
+        private static Writer GetOutput(Options options)
         {
             if (options.Xml)
                 return new XmlOutputdWriter(Console.Out);
             else
                 return new StandardWriter(Console.Out);
+>>>>>>> xml
         }
 
         private static Process GetProcess(string process)
@@ -69,7 +73,7 @@ namespace ProcDiag
             return Process.GetProcessesByName(process);
         }
 
-        private static bool RedirectToX86(Process process, TextWriter outWriter, TextWriter errorWriter)
+        private static bool RedirectToX86(Process process, Writer outWriter, Writer errorWriter)
         {
             if (IntPtr.Size != 8 || !IsWin64Emulator(process)) return false;
 
@@ -85,8 +89,8 @@ namespace ProcDiag
                 };
 
                 var wrapperProcess = Process.Start(processStartInfo);
-                outWriter.WriteLine(wrapperProcess.StandardOutput.ReadToEnd());
-                errorWriter.WriteLine(wrapperProcess.StandardError.ReadToEnd());
+                outWriter.Write(wrapperProcess.StandardOutput.ReadToEnd());
+                errorWriter.Write(wrapperProcess.StandardError.ReadToEnd());
                 wrapperProcess.WaitForExit();
             }
 
