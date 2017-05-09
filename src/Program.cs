@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Diagnostics.Runtime;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,11 +24,11 @@ namespace ProcDiag
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine(ex.Message);
-                Environment.Exit(-1);
+                ConsoleMixins.WriteError(ex.Message);
+                Environment.ExitCode = -1;
+                return;
             }
 
-            
 
             if (RedirectToX86(process, Console.Out, Console.Error))
                 return;
@@ -35,11 +36,16 @@ namespace ProcDiag
             if (!string.IsNullOrEmpty(options.OutputFolder) || (!options.DumpStats && !options.DumpThreads))
                 options.FullDump = true;
             using (var output = GetOutput(options))
+            try
             {
                 Dumper.Start(options, process, output);
             }
-
-        }
+            catch (ClrDiagnosticsException cex ) when(cex.HResult == (int)ClrDiagnosticsException.HR.DebuggerError)
+            {
+                ConsoleMixins.WriteError("Error attaching to process: {0}. Is another debugger attached?{3}Additional details: {2}", process.ProcessName, process.Id, cex.Message, Environment.NewLine);
+                Environment.ExitCode = -1;
+            }
+}
 
         private static IWriter GetOutput(Options options)
         {
@@ -55,11 +61,20 @@ namespace ProcDiag
             if (int.TryParse(process, out pid))
                 return Process.GetProcessById(pid);
 
-            var result = GetProcessByName(process).FirstOrDefault();
-            if (result == null)
+            var processes = GetProcessByName(process).ToList();
+            if (processes.Count == 0)
                 throw new ArgumentException($"Process '{process}' not found!");
 
-            return result;
+            if (processes.Count > 1)
+                throw new ArgumentException($"Multiple processes with same name found! Consider using pid to connect. {Environment.NewLine}{process} pids: {GetPids(processes)}");
+            
+
+            return processes[0];
+        }
+
+        private static string GetPids(System.Collections.Generic.List<Process> processes)
+        {
+            return string.Join(", ", processes.Select(p => p.Id.ToString()));
         }
 
         private static Process[] GetProcessByName(string process)
@@ -88,6 +103,7 @@ namespace ProcDiag
                 outWriter.WriteLine(wrapperProcess.StandardOutput.ReadToEnd());
                 errorWriter.WriteLine(wrapperProcess.StandardError.ReadToEnd());
                 wrapperProcess.WaitForExit();
+                Environment.ExitCode = wrapperProcess.ExitCode;
             }
 
             return true;

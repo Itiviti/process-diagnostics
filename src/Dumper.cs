@@ -71,8 +71,6 @@ namespace ProcDiag
                     parser.ParseLine(frame.ToString());
 
                 threads.Add(parser.GetOutput());
-
-
             }
             return threads;
         }

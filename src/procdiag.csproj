@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleMixins.cs" />
     <Compile Include="Dumper.cs" />
     <Compile Include="HeapStatsEntry.cs" />
     <Compile Include="IWriter.cs" />
