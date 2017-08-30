@@ -13,8 +13,9 @@ namespace ProcDiag
 
         public static void WriteError(string line, params object[] args)
         {
-            WriteLine(ConsoleColor.Red, line, args);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(line, args);
+            Console.ResetColor();
         }
-
     }
 }
