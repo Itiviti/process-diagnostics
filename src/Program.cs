@@ -36,16 +36,25 @@ namespace ProcDiag
             if (!string.IsNullOrEmpty(options.OutputFolder) || (!options.DumpStats && !options.DumpThreads))
                 options.FullDump = true;
             using (var output = GetOutput(options))
-            try
-            {
-                Dumper.Start(options, process, output);
-            }
-            catch (ClrDiagnosticsException cex ) when(cex.HResult == (int)ClrDiagnosticsException.HR.DebuggerError)
-            {
-                ConsoleMixins.WriteError("Error attaching to process: {0}. Is another debugger attached?{3}Additional details: {2}", process.ProcessName, process.Id, cex.Message, Environment.NewLine);
-                Environment.ExitCode = -1;
-            }
-}
+                try
+                {
+                    Dumper.Start(options, process, output);
+                }
+                catch (ClrDiagnosticsException cex) when (cex.HResult == (int) ClrDiagnosticsException.HR.DebuggerError)
+                {
+                    ConsoleMixins.WriteError(
+                        "Error attaching to process: {0}. Is another debugger attached?{3}Additional details: {2}",
+                        process.ProcessName, process.Id, cex.Message, Environment.NewLine);
+                    Environment.ExitCode = -1;
+                }
+                catch (Exception ex)
+                {
+                    ConsoleMixins.WriteError("Error attaching to process '{0}' (pid: {1}).", process.ProcessName,
+                        process.Id);
+                    ConsoleMixins.WriteError("Additional details: {1}", ex.Message);
+                    Environment.ExitCode = -1;
+                }
+        }
 
         private static IWriter GetOutput(Options options)
         {
