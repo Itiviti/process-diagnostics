@@ -23,6 +23,9 @@ namespace ProcDiag
         [VerbOption("full", HelpText = "Create memory dump.")]
         public bool FullDump { get; set; }
 
+        [VerbOption("dumpheapbytype", HelpText = "Dumps the objects of a given type from the managed heap.")]
+        public string DumpHeapByType { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
 

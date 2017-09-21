@@ -27,6 +27,11 @@ namespace ProcDiag
 
                     if (options.DumpStats)
                         stats = HeapDump(runtime);
+
+                    if (!string.IsNullOrEmpty(options.DumpHeapByType))
+                    {
+                        DumpHeapByType(runtime, options.DumpHeapByType, outWriter);
+                    }
                 }
 
                 if (options.FullDump)
@@ -58,6 +63,31 @@ namespace ProcDiag
                 outWriter.WriteLine(sb.ToString(), "Heap");
                 outWriter.WriteHint("Heap stats finished.");
             }
+        }
+
+        private static void DumpHeapByType(ClrRuntime runtime, string typeName, IWriter outWriter)
+        {
+            int count = 0;
+            ClrHeap heap = runtime.GetHeap();
+            foreach (ClrSegment seg in heap.Segments)
+            {
+                for (ulong obj = seg.FirstObject; obj != 0; obj = seg.NextObject(obj))
+                {
+                    ClrType type = heap.GetObjectType(obj);
+
+                    // If heap corruption, continue past this object.
+                    if (type == null)
+                        continue;
+
+                    if (string.Equals(type.Name, typeName, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        count ++;
+                        ulong size = type.GetSize(obj);
+                        outWriter.WriteLine($"{obj,12:X} {size,8:n0} {seg.GetGeneration(obj),1:n0} {type.Name}");
+                    }
+                }
+            }
+            outWriter.WriteLine($"Total {count} objects");
         }
 
         private static IEnumerable<ThreadData> ThreadsDump(ClrRuntime runtime)

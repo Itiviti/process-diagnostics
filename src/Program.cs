@@ -33,7 +33,7 @@ namespace ProcDiag
             if (RedirectToX86(process, Console.Out, Console.Error))
                 return;
 
-            if (!string.IsNullOrEmpty(options.OutputFolder) || (!options.DumpStats && !options.DumpThreads))
+            if (!string.IsNullOrEmpty(options.OutputFolder) || !IsAnyOptionSet(options))
                 options.FullDump = true;
             using (var output = GetOutput(options))
                 try
@@ -54,6 +54,11 @@ namespace ProcDiag
                     ConsoleMixins.WriteError("Additional details: {1}", ex.Message);
                     Environment.ExitCode = -1;
                 }
+        }
+
+        private static bool IsAnyOptionSet(Options options)
+        {
+            return options.DumpStats || options.DumpThreads || !string.IsNullOrEmpty(options.DumpHeapByType);
         }
 
         private static IWriter GetOutput(Options options)
