@@ -9,7 +9,6 @@ using System.Text;
 
 namespace ProcDiag
 {
-
     internal class Dumper
     {
         public static void Start(Options options, Process process, IWriter outWriter)
@@ -90,6 +89,18 @@ namespace ProcDiag
             outWriter.WriteLine($"Total {count} objects");
         }
 
+        public static void Attach(Process process)
+        {
+            Worker.Attach(process.Id);
+        }
+
+        private static readonly DumpWorker Worker = new DumpWorker();
+
+        internal static void Execute(List<Tuple<int, string>> threadIds)
+        {
+            Worker.DumpThreadStacks(threadIds);
+        }
+
         private static IEnumerable<ThreadData> ThreadsDump(ClrRuntime runtime)
         {
             List<ThreadData> threads = new List<ThreadData>();
@@ -108,7 +119,7 @@ namespace ProcDiag
         private static Dictionary<ClrType, HeapStatsEntry> HeapDump(ClrRuntime runtime)
         {
             Dictionary<ClrType, HeapStatsEntry> stats = new Dictionary<ClrType, HeapStatsEntry>();
-            ClrHeap heap = runtime.GetHeap();
+            ClrHeap heap = runtime.Heap;
             foreach (ClrSegment seg in heap.Segments)
             {
                 for (ulong obj = seg.FirstObject; obj != 0; obj = seg.NextObject(obj))

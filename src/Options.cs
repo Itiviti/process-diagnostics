@@ -26,6 +26,9 @@ namespace ProcDiag
         [VerbOption("dumpheapbytype", HelpText = "Dumps the objects of a given type from the managed heap.")]
         public string DumpHeapByType { get; set; }
 
+        [VerbOption("monitor", HelpText = "Listen to console for requests")]
+        public bool Monitor { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
 
