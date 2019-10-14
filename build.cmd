@@ -8,7 +8,10 @@ cd src\bin\Release
 ..\..\..\packages\ILRepack.2.0.10\tools\ILRepack.exe procdiag.exe CommandLine.dll Microsoft.Diagnostics.Runtime.dll /out=..\..\..\build\procdiag.exe
 
 popd 
-nuget pack procdiag.nuspec -o build
+mkdir contentFiles
+copy build\procdiag.exe contentFiles\
+
+nuget pack procdiag.nuspec -OutputDirectory build
 pause
 
 

@@ -9,8 +9,12 @@
         <projectUrl>https://github.com/adrianrus/process-diagnostics</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Command line utility to create memory and call stack dumps based on CLRMD</description>
+        <contentFiles>
+            <files include="**\procdiag.exe" buildAction="None" copyToOutput="true"/>
+        </contentFiles>
     </metadata>
     <files>
-        <file src="build\procdiag.exe" target="tools\procdiag.exe" />
+        <file src="build\procdiag.exe" target="tools"/>
+        <file src="build\procdiag.exe" target="contentFiles\any\any\"/>
     </files>
 </package>
