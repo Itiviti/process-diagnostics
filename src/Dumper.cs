@@ -67,7 +67,7 @@ namespace ProcDiag
         private static void DumpHeapByType(ClrRuntime runtime, string typeName, IWriter outWriter)
         {
             int count = 0;
-            ClrHeap heap = runtime.GetHeap();
+            ClrHeap heap = runtime.Heap;
             foreach (ClrSegment seg in heap.Segments)
             {
                 for (ulong obj = seg.FirstObject; obj != 0; obj = seg.NextObject(obj))
