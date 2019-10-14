@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace ProcDiag
 {
@@ -29,12 +30,28 @@ namespace ProcDiag
                 return;
             }
 
-
             if (RedirectToX86(process, Console.Out, Console.Error))
                 return;
 
+            if (options.Monitor)
+            {
+                var th = new Thread(() => MonitorProcess(process))
+                {
+                    IsBackground = true
+                };
+                th.Start();
+
+                while (!process.HasExited && th.IsAlive)
+                {
+                    Thread.Sleep(5000);
+                }
+
+                return;
+            }
+
             if (!string.IsNullOrEmpty(options.OutputFolder) || !IsAnyOptionSet(options))
                 options.FullDump = true;
+
             using (var output = GetOutput(options))
                 try
                 {
@@ -61,6 +78,42 @@ namespace ProcDiag
             return options.DumpStats || options.DumpThreads || !string.IsNullOrEmpty(options.DumpHeapByType);
         }
 
+        private static void MonitorProcess(Process process)
+        {
+            Dumper.Attach(process);
+
+            while (!process.HasExited)
+            {
+                var cmd = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(cmd)) continue;
+                if (cmd == "q") break;
+
+                try
+                {
+                    string[] threads = cmd.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
+                    var threadIds = threads.Select(ParseThread).ToList();
+                    if (threadIds.Any())
+                        Dumper.Execute(threadIds);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($@"{cmd} => {ex.Message}");
+                }
+            }
+        }
+
+        private static Tuple<int, string> ParseThread(string s)
+        {
+            var splits = s.Split('|');
+            var prefix = "";
+            if (splits.Length > 1)
+                prefix = splits[1];
+
+            return Tuple.Create(Convert.ToInt32(splits[0]), prefix);
+        }
+
+        private static readonly char[] Separator = { ';' };
+
         private static IWriter GetOutput(Options options)
         {
             if (options.Xml)
@@ -81,7 +134,6 @@ namespace ProcDiag
 
             if (processes.Count > 1)
                 throw new ArgumentException($"Multiple processes with same name found! Consider using pid to connect. {Environment.NewLine}{process} pids: {GetPids(processes)}");
-            
 
             return processes[0];
         }

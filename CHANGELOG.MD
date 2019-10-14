@@ -1,5 +1,9 @@
 # Changelog 
 
+## 1.3.1
+
+* bug fix release
+
 ## 1.3.0
 
 * Arguments overhaul (BREAKING CHANGES)
