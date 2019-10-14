@@ -29,5 +29,6 @@ build/
 _ReSharper*/
 [Tt]est[Rr]esult*
 packages/
+contentFiles/
 /.vs
 *.orig
