@@ -7,12 +7,11 @@ Features
 * Dump callstacks
 * Dump heapstats
 * Can attach to both 32bit and 64bit processes
+* Single executable
 
 # Available options
 
-  -p/--pid required option is missing.
-
-
+```
   -p, --pid           Required. Process id/name.
 
   -o, --out           The folder where minidump will be created. Setting it
@@ -26,14 +25,16 @@ Features
 
   --full              Create memory dump.
 
-  --passive           Use passive attach to process. Target process will not be
-                      paused but results might be inaccurate.
+  --passive           Use passive attach to process instead of NonInvasive
+                      which is the default. Target process will not be paused
+                      but results might be inaccurate.
 
   --dumpheapbytype    Dumps the objects of a given type from the managed heap.
 
   --monitor           Procdiag attaches and stays attached to a running process
-                      and listens for console input in the form
+                      then listens for console input in the form
                       managed_thread_id|other_info and outputs to console
-                      other_info and the stack for that thread.
+                      other_info concatenaed with the stack for the thread.
 
   --help              Display this help screen.
+```
