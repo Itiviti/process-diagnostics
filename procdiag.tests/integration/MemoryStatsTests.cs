@@ -38,7 +38,7 @@ namespace procdiag.tests.integration
         {
             StringAssert.Contains("Heap stats:", result);
             StringAssert.Contains("Size        Count Type", result);
-            StringAssert.EndsWith("Heap stats finished." + Environment.NewLine, result);
+            StringAssert.EndsWith("Heap stats finished.", result.TrimEnd('\r', '\n', ' '));
         }
     }
 }
