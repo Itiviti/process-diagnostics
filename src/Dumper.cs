@@ -15,7 +15,8 @@ namespace ProcDiag
         {
             Dictionary<ClrType, HeapStatsEntry> stats = null;
             IEnumerable<ThreadData> threads = null;
-            using (var dataTarget = DataTarget.AttachToProcess(process.Id, 5000, AttachFlag.Invasive))
+            var attachFlag = options.PassiveAttach ? AttachFlag.Passive : AttachFlag.NonInvasive;
+            using (var dataTarget = DataTarget.AttachToProcess(process.Id, 5000, attachFlag))
             {
                 ClrInfo version = dataTarget.ClrVersions.FirstOrDefault();
                 if (version != null)

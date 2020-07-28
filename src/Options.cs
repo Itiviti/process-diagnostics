@@ -23,10 +23,13 @@ namespace ProcDiag
         [VerbOption("full", HelpText = "Create memory dump.")]
         public bool FullDump { get; set; }
 
+        [VerbOption("passive", HelpText = "Use passive attach to process instead of NonInvasive which is the default. Target process will not be paused but results might be inaccurate.")]
+        public bool PassiveAttach { get; set; }
+
         [VerbOption("dumpheapbytype", HelpText = "Dumps the objects of a given type from the managed heap.")]
         public string DumpHeapByType { get; set; }
 
-        [VerbOption("monitor", HelpText = "Listen to console for requests")]
+        [VerbOption("monitor", HelpText = "Procdiag attaches and stays attached to a running process and listens for console input in the form managed_thread_id|other_info and outputs to console other_info and the stack for that thread.")]
         public bool Monitor { get; set; }
 
         [ParserState]
