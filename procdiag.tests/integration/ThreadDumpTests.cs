@@ -38,10 +38,11 @@ namespace procdiag.tests.integration
 
         private static void AssertThreadDump(string result, string processName)
         {
-            StringAssert.StartsWith("Thread dump:", result);
-            StringAssert.Contains($"{processName}.Program.Main(System.String[])", result);
-            StringAssert.Contains("System.Console.ReadLine()", result);
-            StringAssert.EndsWith("Thread dump finished." + Environment.NewLine, result);
+            cleanResult = result.TrimEnd(' ', '\r', '\n' );
+            StringAssert.StartsWith("Thread dump:", cleanResult);
+            StringAssert.Contains($"{processName}.Program.Main(System.String[])", cleanResult);
+            StringAssert.Contains("System.Console.ReadLine()", cleanResult);
+            StringAssert.EndsWith("Thread dump finished.", cleanResult);
         }
     }
 }
