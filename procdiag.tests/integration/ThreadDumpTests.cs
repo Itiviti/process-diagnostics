@@ -38,7 +38,7 @@ namespace procdiag.tests.integration
 
         private static void AssertThreadDump(string result, string processName)
         {
-            cleanResult = result.TrimEnd(' ', '\r', '\n' );
+            var cleanResult = result.TrimEnd(' ', '\r', '\n' );
             StringAssert.StartsWith("Thread dump:", cleanResult);
             StringAssert.Contains($"{processName}.Program.Main(System.String[])", cleanResult);
             StringAssert.Contains("System.Console.ReadLine()", cleanResult);
