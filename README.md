@@ -10,10 +10,30 @@ Features
 
 # Available options
 
-  -p, --pid    Required. Process id/name to attach to.
-  -o, --out    The folder where memory dump will be created. Setting it implies --full option.
-  --threads    Dump thread callstacks.
-  --stats      Dump heap stats.
-  --full       Create memory dump.
-  --help       Display this help screen.
-  
+  -p/--pid required option is missing.
+
+
+  -p, --pid           Required. Process id/name.
+
+  -o, --out           The folder where minidump will be created. Setting it
+                      implies --full option
+
+  --threads           Dump thread callstacks.
+
+  --xml               XML output.
+
+  --stats             Dump heap stats.
+
+  --full              Create memory dump.
+
+  --passive           Use passive attach to process. Target process will not be
+                      paused but results might be inaccurate.
+
+  --dumpheapbytype    Dumps the objects of a given type from the managed heap.
+
+  --monitor           Procdiag attaches and stays attached to a running process
+                      and listens for console input in the form
+                      managed_thread_id|other_info and outputs to console
+                      other_info and the stack for that thread.
+
+  --help              Display this help screen.

@@ -29,7 +29,7 @@ namespace ProcDiag
         [VerbOption("dumpheapbytype", HelpText = "Dumps the objects of a given type from the managed heap.")]
         public string DumpHeapByType { get; set; }
 
-        [VerbOption("monitor", HelpText = "Procdiag attaches and stays attached to a running process and listens for console input in the form managed_thread_id|other_info and outputs to console other_info and the stack for that thread.")]
+        [VerbOption("monitor", HelpText = "Procdiag attaches and stays attached to a running process then listens for console input in the form managed_thread_id|other_info and outputs to console other_info concatenaed with the stack for the thread.")]
         public bool Monitor { get; set; }
 
         [ParserState]
